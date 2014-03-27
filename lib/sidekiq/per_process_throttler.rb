@@ -47,15 +47,18 @@ module Sidekiq
       end
 
       rate_limit.exceeded do
-        Sidekiq.redis do |conn|
-          msg["requeued_count"] ||= 0
-          msg["requeued_count"] += 1
-          # Sidekiq.logger.debug "msg.class: #{msg.class}"
-          # Sidekiq.logger.debug "msg: #{msg}"
-          # Sidekiq.logger.debug "msg.to_json: #{msg.to_json}"
-          conn.lpush("queue:#{queue}", msg.to_json)
-          nil
-        end
+        worker.class.perform_async(*msg['args'])
+        # Sidekiq.redis do |conn|
+        #   msg["requeued_count"] ||= 0
+        #   msg["requeued_count"] += 1
+        #   Sidekiq.logger.debug "msg.class: #{msg.class}"
+        #   Sidekiq.logger.debug "msg: #{msg}"
+        #   Sidekiq.logger.debug "JSON.dump(msg): #{JSON.dump(msg)}"
+        #   Sidekiq.logger.debug "msg.to_json: #{msg.to_json}"
+        #   Sidekiq.logger.debug "msg.stringify_keys: #{msg.stringify_keys}"
+        #   conn.lpush("queue:#{queue}", msg.stringify_keys)
+        #   nil
+        # end
       end
 
       rate_limit.execute
