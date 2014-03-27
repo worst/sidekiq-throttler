@@ -48,8 +48,8 @@ module Sidekiq
 
       rate_limit.exceeded do
         Sidekiq.redis do |conn|
-          msg["requeued_count"] ||= 0
-          msg["requeued_count"] += 1
+          # msg["requeued_count"] ||= 0
+          # msg["requeued_count"] += 1
           conn.lpush("queue:#{queue}", msg)
           nil
         end
