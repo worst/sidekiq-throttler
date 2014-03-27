@@ -48,9 +48,12 @@ module Sidekiq
 
       rate_limit.exceeded do
         Sidekiq.redis do |conn|
-          # msg["requeued_count"] ||= 0
-          # msg["requeued_count"] += 1
-          conn.lpush("queue:#{queue}", msg)
+          msg["requeued_count"] ||= 0
+          msg["requeued_count"] += 1
+          # Sidekiq.logger.debug "msg.class: #{msg.class}"
+          # Sidekiq.logger.debug "msg: #{msg}"
+          # Sidekiq.logger.debug "msg.to_json: #{msg.to_json}"
+          conn.lpush("queue:#{queue}", msg.to_json)
           nil
         end
       end
