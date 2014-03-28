@@ -46,6 +46,8 @@ module Sidekiq
         yield
       end
 
+      Sidekiq.logger.debug "msg: #{msg}"
+
       rate_limit.exceeded do
         worker.class.perform_async(*msg['args'])
         # Sidekiq.redis do |conn|
